@@ -1,4 +1,3 @@
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Main {
@@ -73,6 +72,17 @@ public class Main {
         System.out.println("test matrix:");
         System.out.println(m);
 
+        m.scaleRow(2, 1.0/9);
+        m.swapRows(1, 2);
+
+        System.out.println("test matrix");
+        System.out.println(m);
+
+        m.addRows(0, 1, -1);
+
+        System.out.println("test matrix");
+        System.out.println(m);
+
         try {
             m.set(-1, 1, 5);
         } catch (IllegalArgumentException e) {
@@ -89,6 +99,12 @@ public class Main {
 
         try {
             m.setRow(1, tooLongRow);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Caught: " + e.toString());
+        }
+
+        try {
+            m.swapRows(-1, 2);
         } catch (IllegalArgumentException e) {
             System.out.println("Caught: " + e.toString());
         }

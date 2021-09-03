@@ -9,7 +9,7 @@ public class Matrix {
 
     // for storing the toString value and only recalculating it when necessary
     private String asString;
-    private boolean stringChanged;
+    private boolean dataChanged;
 
     public Matrix(int ROWS, int COLS) {
 
@@ -18,11 +18,11 @@ public class Matrix {
 
         data = new double[ROWS][COLS];
 
-        stringChanged = true;
+        dataChanged = true;
 
     }
 
-    // GETTERS
+    // ACCESSORS
 
     // returns value at specified location in the matrix
     public double get(int row, int col) {
@@ -35,7 +35,7 @@ public class Matrix {
 
     }
 
-    // SETTERS
+    // MUTATORS
 
     // sets value at specified location in the matrix
     public void set(int row, int col, double value) {
@@ -44,7 +44,7 @@ public class Matrix {
             throw new IllegalArgumentException("Inputted location out of bounds");
         }
 
-        stringChanged = true;
+        dataChanged = true;
         data[row][col] = value;
 
     }
@@ -56,11 +56,55 @@ public class Matrix {
             throw new IllegalArgumentException("The inputted values do not match the length of the matrix");
         } else if (!validRow(row)) {
             throw new IllegalArgumentException("Inputted row out of bounds");
-        } else {
-            stringChanged = true;
-            data[row] = Arrays.copyOf(values, ROWS); // needs testing
         }
 
+        dataChanged = true;
+        data[row] = Arrays.copyOf(values, ROWS);
+
+    }
+
+    // swaps the location of 2 rows
+    public void swapRows(int row1, int row2) {
+
+        if (!validRow(row1) || !validRow(row2)) {
+            throw new IllegalArgumentException("Inputted row out of bounds");
+        }
+
+        dataChanged = true;
+        double[] temp = data[row1];
+        data[row1] = data[row2];
+        data[row2] = temp;
+
+    }
+
+    // multiplies an entire row by a scalar
+    public void scaleRow(int row, double scalar) {
+        if (!validRow(row)) {
+            throw new IllegalArgumentException("Inputted row out of bounds");
+        }
+
+        for (int col = 0; col < COLS; col++) {
+
+            data[row][col] = data[row][col] * scalar;
+
+        }
+
+        dataChanged = true;
+    }
+
+    // adds row1 times scalar to row2
+    public void addRows(int row1, int row2, double scalar) {
+        if (!validRow(row1) || !validRow(row2)) {
+            throw new IllegalArgumentException("Inputted row out of bounds");
+        }
+
+        for (int col = 0; col < COLS; col++) {
+
+            data[row2][col] += data[row1][col] * scalar;
+
+        }
+
+        dataChanged = true;
     }
 
     // HELPER FUNCTIONS
@@ -84,8 +128,8 @@ public class Matrix {
     public String toString() {
 
         // only goes through the expensive String recalculation process when changes have occurred to the data
-        if (!stringChanged) return asString;
-        stringChanged = false;
+        if (!dataChanged) return asString;
+        dataChanged = false;
 
         // get display values for every value in the matrix and spaces associated with them
         String[][] displayValues = new String[ROWS][COLS];
