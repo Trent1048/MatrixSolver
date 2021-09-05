@@ -53,7 +53,7 @@ public class Main {
 
         double[] row1 = {1, 4.2, 9.32};
         double[] row2 = {0, -5.936, 7};
-        double[] row3 = {54, 1.3, 0.48};
+        double[] row3 = {19, 95, 0.48};
 
         m.setRow(0, row1);
         m.setRow(1, row2);
@@ -88,7 +88,6 @@ public class Main {
         double[] zeros = {0, 0, 0};
 
         m.setRow(2, zeros);
-        m.zeroPivotColsAbove(1);
 
         System.out.println("test matrix");
         System.out.println(m);
@@ -129,9 +128,15 @@ public class Main {
         System.out.println("test matrix");
         System.out.println(mSorted);
 
-        m.setRow(0, row1);
-        m.setRow(1, row2);
-        m.setRow(2, row3);
+        m = new Matrix(3, 4);
+
+        double[] row4 = {1, 4.2, 9.4, 3.12};
+        double[] row5 = {0, -5.936, 7, 52};
+        double[] row6 = {19, 1.3, 0.48, 0};
+
+        m.setRow(0, row4);
+        m.setRow(1, row5);
+        m.setRow(2, row6);
 
         System.out.println("test matrix");
         System.out.println(m);
@@ -146,14 +151,38 @@ public class Main {
         System.out.println("test matrix");
         System.out.println(m);
 
-        m.zeroPivotColsAbove(1);
+        m.normalizeRow(1);
 
         System.out.println("test matrix");
         System.out.println(m);
 
-        m.normalizeRow(1);
+        m.setRow(0, row4);
+        m.setRow(1, row5);
+        m.setRow(2, row6);
 
         System.out.println("test matrix");
+        System.out.println(m);
+
+        m.echelonForm();
+
+        System.out.println("test matrix (echelon form)");
+        System.out.println(m);
+
+        m.reducedEchelonForm();
+
+        System.out.println("test matrix (reduced echelon form)");
+        System.out.println(m);
+
+        m.setRow(0, row4);
+        m.setRow(1, row5);
+        m.setRow(2, row6);
+
+        System.out.println("test matrix");
+        System.out.println(m);
+
+        m.reducedEchelonForm();
+
+        System.out.println("test matrix (reduced echelon from fresh)");
         System.out.println(m);
 
         try {

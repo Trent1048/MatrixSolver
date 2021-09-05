@@ -64,8 +64,9 @@ public class Matrix {
             throw new IllegalArgumentException("Inputted location out of bounds");
         }
 
-        dataChanged = true;
         data[row][col] = value;
+
+        dataChanged = true;
 
     }
 
@@ -78,8 +79,9 @@ public class Matrix {
             throw new IllegalArgumentException("Inputted row out of bounds");
         }
 
+        data[row] = Arrays.copyOf(values, COLS);
+
         dataChanged = true;
-        data[row] = Arrays.copyOf(values, ROWS);
 
     }
 
@@ -90,10 +92,11 @@ public class Matrix {
             throw new IllegalArgumentException("Inputted row out of bounds");
         }
 
-        dataChanged = true;
         double[] temp = data[row1];
         data[row1] = data[row2];
         data[row2] = temp;
+
+        dataChanged = true;
 
     }
 
@@ -265,6 +268,27 @@ public class Matrix {
 
         dataChanged = true;
 
+    }
+
+    // TODO: add detection for no solution
+
+    // puts the matrix into echelon form
+    public void echelonForm() {
+        sortRows();
+        for (int row = 0; row < ROWS - 1; row++) {
+            zeroPivotColsBelow(row);
+        }
+        dataChanged = true;
+    }
+
+    // puts the matrix into reduced echelon form
+    public void reducedEchelonForm() {
+        echelonForm();
+        for (int row = ROWS - 1; row > 0; row--) {
+            zeroPivotColsAbove(row);
+            normalizeRow(row);
+        }
+        dataChanged = true;
     }
 
     // HELPER FUNCTIONS
