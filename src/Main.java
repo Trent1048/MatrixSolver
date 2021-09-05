@@ -51,8 +51,8 @@ public class Main {
 
         Matrix m = new Matrix(3, 3);
 
-        double[] row1 = {1, 4.2, 98.32};
-        double[] row2 = {0, 5.93212466, 7};
+        double[] row1 = {1, 4.2, 9.32};
+        double[] row2 = {0, -5.936, 7};
         double[] row3 = {54, 1.3, 0.48};
 
         m.setRow(0, row1);
@@ -79,6 +79,79 @@ public class Main {
         System.out.println(m);
 
         m.addRows(0, 1, -1);
+
+        System.out.println("test matrix");
+        System.out.println(m);
+
+        System.out.println("leading coefficient of row 1 in column: " + m.getPivotCol(1) + "\n");
+
+        double[] zeros = {0, 0, 0};
+
+        m.setRow(2, zeros);
+        m.zeroPivotColsAbove(1);
+
+        System.out.println("test matrix");
+        System.out.println(m);
+
+        System.out.println("leading coefficient of row 2 in column: " + m.getPivotCol(2) + "\n");
+
+        m.normalizeRow(1);
+
+        System.out.println("test matrix");
+        System.out.println(m);
+
+        m.zeroOtherRowInPivotColumn(1, 0);
+
+        System.out.println("test matrix");
+        System.out.println(m);
+
+        Matrix mSorted = new Matrix(6, 5);
+
+        double[] noZeros = {1, 2, 3, 4, 5};
+        double[] oneZero = {0, 1, 2, 3, 4};
+        double[] twoZeros = {0, 0, 1, 2, 3};
+        double[] threeZeros = {0, 0, 0, 1, 2};
+        double[] fourZeros = {0, 0, 0, 0, 1};
+        double[] fiveZeros = {0, 0, 0, 0, 0};
+
+        mSorted.setRow(0, twoZeros);
+        mSorted.setRow(1, fiveZeros);
+        mSorted.setRow(2, noZeros);
+        mSorted.setRow(3, threeZeros);
+        mSorted.setRow(4, fourZeros);
+        mSorted.setRow(5, oneZero);
+
+        System.out.println("test matrix");
+        System.out.println(mSorted);
+
+        mSorted.sortRows();
+
+        System.out.println("test matrix");
+        System.out.println(mSorted);
+
+        m.setRow(0, row1);
+        m.setRow(1, row2);
+        m.setRow(2, row3);
+
+        System.out.println("test matrix");
+        System.out.println(m);
+
+        m.zeroPivotColsBelow(0);
+
+        System.out.println("test matrix");
+        System.out.println(m);
+
+        m.zeroPivotColsBelow(1);
+
+        System.out.println("test matrix");
+        System.out.println(m);
+
+        m.zeroPivotColsAbove(1);
+
+        System.out.println("test matrix");
+        System.out.println(m);
+
+        m.normalizeRow(1);
 
         System.out.println("test matrix");
         System.out.println(m);

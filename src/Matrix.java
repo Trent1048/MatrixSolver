@@ -1,9 +1,12 @@
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class Matrix {
 
     private final int ROWS;
     private final int COLS;
+
+    public static final double PRECISION = 0.00001;
 
     private double[][] data;
 
@@ -11,10 +14,10 @@ public class Matrix {
     private String asString;
     private boolean dataChanged;
 
-    public Matrix(int ROWS, int COLS) {
+    public Matrix(int rows, int cols) {
 
-        this.ROWS = ROWS;
-        this.COLS = COLS;
+        this.ROWS = rows;
+        this.COLS = cols;
 
         data = new double[ROWS][COLS];
 
@@ -32,6 +35,23 @@ public class Matrix {
         }
 
         return data[row][col];
+
+    }
+
+    // returns what column the leading coefficient is in of that row
+    // returns -1 if there is no leading coefficient (all 0 row)
+    public int getPivotCol(int row) {
+        if (!validRow(row)) {
+            throw new IllegalArgumentException("Inputted row out of bounds");
+        }
+
+        for (int col = 0; col < COLS; col++) {
+
+            if (data[row][col] != 0) return col;
+
+        }
+
+        return -1;
 
     }
 
@@ -77,6 +97,57 @@ public class Matrix {
 
     }
 
+    // sorts the rows so that all zero rows are on the bottom and leading entries either go down or down and right
+    public void sortRows() {
+
+        // map each row to how many leading 0s it has so as not to
+        // recalculate every time, which takes a lot of computation
+
+        HashMap<double[], Integer> leadingZeros = new HashMap<>();
+        double[] rowArr;
+        int leadingZerosForRow;
+
+        for (int row = 0; row < ROWS; row++) {
+
+            rowArr = data[row];
+            leadingZerosForRow = getPivotCol(row);
+            if (leadingZerosForRow == -1) { // full zero row
+                leadingZerosForRow = COLS;
+            }
+
+            leadingZeros.put(rowArr, leadingZerosForRow);
+
+        }
+
+        // use an insertion sort algorithm to sort them by least
+        // to greatest number of 0s before the leading coefficient
+
+        double[] lowerRow;
+        double[] upperRow;
+
+        // go through each row top to bottom
+        for (int row = 1; row < ROWS; row++) {
+
+            // loop through every row bottom to top, starting at the current one
+            // and moves the row with least leading zeros towards the top
+            for (int i = row; i > 0; i--) {
+
+                lowerRow = data[i];
+                upperRow = data[i - 1];
+
+                if (leadingZeros.get(lowerRow) < leadingZeros.get(upperRow)) {
+                    // swap rows
+                    data[i] = upperRow;
+                    data[i - 1] = lowerRow;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        dataChanged = true;
+    }
+
     // multiplies an entire row by a scalar
     public void scaleRow(int row, double scalar) {
         if (!validRow(row)) {
@@ -87,6 +158,31 @@ public class Matrix {
 
             data[row][col] = data[row][col] * scalar;
 
+            // to eliminate floating point errors
+            if (Math.abs(data[row][col]) < PRECISION) {
+                data[row][col] = 0;
+            }
+
+        }
+
+        dataChanged = true;
+    }
+
+    // scales the inputted row so that the leading coefficient = 1
+    public void normalizeRow(int row) {
+        if (!validRow(row)) {
+            throw new IllegalArgumentException("Inputted row out of bounds");
+        }
+
+        int pivotCol = getPivotCol(row);
+        if (pivotCol != -1) { // don't need to do anything if the row is all 0s
+
+            double pivotValue = get(row, pivotCol);
+            if (pivotValue != 1) { // don't need to do anything if the leading coefficient is already 1
+
+                scaleRow(row, 1/pivotValue);
+
+            }
         }
 
         dataChanged = true;
@@ -102,9 +198,73 @@ public class Matrix {
 
             data[row2][col] += data[row1][col] * scalar;
 
+            // to eliminate floating point errors
+            if (Math.abs(data[row2][col]) < PRECISION) {
+                data[row2][col] = 0;
+            }
+
         }
 
         dataChanged = true;
+    }
+
+    // adds row1 to row2 a number of times so row2 has a value of 0 in the pivot column of row1
+    public void zeroOtherRowInPivotColumn(int row1, int row2) {
+        if (!validRow(row1) || !validRow(row2)) {
+            throw new IllegalArgumentException("Inputted row out of bounds");
+        }
+
+        int pivotCol = getPivotCol(row1);
+        if (pivotCol != -1) { // don't need to do anything if the row is all 0s
+
+            double otherRowValInPivotCol = get(row2, pivotCol);
+            if (otherRowValInPivotCol != 0) { // don't need to do anything if the value in the pivot column is already 0
+
+                double pivotValue = get(row1, pivotCol);
+                addRows(row1, row2, -otherRowValInPivotCol/pivotValue);
+
+                // gets rid of those pesky values like 2 * 10^-14 that
+                // should be zero, but aren't due to floating point error
+                data[row2][pivotCol] = 0;
+
+            }
+        }
+
+        dataChanged = true;
+    }
+
+    // makes all 0s in rows below the inputted row within that row's pivot column
+    public void zeroPivotColsBelow(int startingRow) {
+        if (!validRow(startingRow)) {
+            throw new IllegalArgumentException("Inputted row out of bounds");
+        }
+
+        // loop through rows below and zero them
+        for (int row = startingRow + 1; row < ROWS; row++) {
+
+            zeroOtherRowInPivotColumn(startingRow, row);
+
+        }
+
+        dataChanged = true;
+
+    }
+
+    // makes all 0s in rows above the inputted row within that row's pivot column
+    public void zeroPivotColsAbove(int startingRow) {
+        if (!validRow(startingRow)) {
+            throw new IllegalArgumentException("Inputted row out of bounds");
+        }
+
+        // loop through rows above and zero them
+        for (int row = startingRow - 1; row >= 0; row--) {
+
+            zeroOtherRowInPivotColumn(startingRow, row);
+
+        }
+
+        dataChanged = true;
+
     }
 
     // HELPER FUNCTIONS
@@ -133,7 +293,7 @@ public class Matrix {
 
         // get display values for every value in the matrix and spaces associated with them
         String[][] displayValues = new String[ROWS][COLS];
-        String[][] spaces = new String[ROWS][COLS];
+        String[][] spaces;
 
         for (int row = 0; row < ROWS; row++) {
             for (int col = 0; col < COLS; col++) {
