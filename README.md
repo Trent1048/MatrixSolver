@@ -1,2 +1,2 @@
 # MatrixSolver
-A program that can do various matrix operations.
+A program that can solve linear equations inputted as matrices.

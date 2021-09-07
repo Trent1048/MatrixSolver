@@ -270,8 +270,6 @@ public class Matrix {
 
     }
 
-    // TODO: add detection for no solution
-
     // puts the matrix into echelon form
     public void echelonForm() {
         sortRows();
