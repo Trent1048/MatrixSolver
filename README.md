@@ -1,2 +1,2 @@
 # MatrixSolver
-A program that can solve linear equations inputted as matrices.
+A program that can reduce augmented matrices into echelon and reduced echelon form.
