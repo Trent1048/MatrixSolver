@@ -300,6 +300,7 @@ public class Matrix {
     // puts the matrix into reduced echelon form
     public void reducedEchelonForm() {
         echelonForm();
+        normalizeRow(0);
         for (int row = ROWS - 1; row > 0; row--) {
             zeroAbovePivotCols(row);
             normalizeRow(row);
