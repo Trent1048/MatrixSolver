@@ -11,16 +11,16 @@ public class Main {
         Scanner console = new Scanner(System.in);
         String command;
 
-        System.out.println("Welcome, this is a program that can solve linear equations inputted as matrices\n");
+        System.out.println("Welcome, this is a program that can put an augmented matrix into echelon or reduced echelon form\n");
 
         mainLoop:
         while (true) {
 
             System.out.println("""
                     Please enter a command:
-                    \tInput system of equations (I)
-                    \tConvert inputted system into echelon form (E)
-                    \tConvert inputted system into reduced echelon form (R)
+                    \tInput an augmented matrix (I)
+                    \tConvert inputted matrix into echelon form (E)
+                    \tConvert inputted matrix into reduced echelon form (R)
                     \tQuit the program (Q)
                     """);
 

@@ -100,8 +100,15 @@ public class Matrix {
 
     }
 
-    // sorts the rows so that all zero rows are on the bottom and leading entries either go down or down and right
+    // sorts the rows so that all zero rows are on the bottom and leading entries go down and right
     public void sortRows() {
+        sortRows(1);
+    }
+
+    // sorts the rows so the zero rows are on the bottom and leading entries go down and right
+    // starts the sorting process at startingRow, useful for when the top part is known to be sorted
+    // but row operations may cause lower potions to no longer be sorted
+    private void sortRows(int startingRow) {
 
         // map each row to how many leading 0s it has so as not to
         // recalculate every time, which takes a lot of computation
@@ -127,28 +134,36 @@ public class Matrix {
 
         double[] lowerRow;
         double[] upperRow;
+        int lowerLeadingZeroes;
 
-        // go through each row top to bottom
-        for (int row = 1; row < ROWS; row++) {
+        // go through each row top to bottom, skipping the first one because that is
+        // already assumed to be in the "sorted" section of the matrix
+        for (int row = startingRow; row < ROWS; row++) {
+
+            // get row we are trying to insert into sorted upper
+            // portion and calculate how many leading zeroes it has
+            lowerRow = data[row];
+            lowerLeadingZeroes = leadingZeros.get(lowerRow);
 
             // loop through every row bottom to top, starting at the current one
-            // and moves the row with least leading zeros towards the top
+            // and continue to move that row up as long as it has less leading zeroes
+            // than the one above it
             for (int i = row; i > 0; i--) {
 
-                lowerRow = data[i];
+                // row currently directly above the current row we are trying to place
                 upperRow = data[i - 1];
 
-                if (leadingZeros.get(lowerRow) < leadingZeros.get(upperRow)) {
+                if (lowerLeadingZeroes < leadingZeros.get(upperRow)) {
                     // swap rows
                     data[i] = upperRow;
                     data[i - 1] = lowerRow;
+
+                    dataChanged = true;
                 } else {
                     break;
                 }
             }
         }
-
-        dataChanged = true;
     }
 
     // multiplies an entire row by a scalar
@@ -237,7 +252,7 @@ public class Matrix {
     }
 
     // makes all 0s in rows below the inputted row within that row's pivot column
-    public void zeroPivotColsBelow(int startingRow) {
+    public void zeroBelowPivotCols(int startingRow) {
         if (!validRow(startingRow)) {
             throw new IllegalArgumentException("Inputted row out of bounds");
         }
@@ -254,7 +269,7 @@ public class Matrix {
     }
 
     // makes all 0s in rows above the inputted row within that row's pivot column
-    public void zeroPivotColsAbove(int startingRow) {
+    public void zeroAbovePivotCols(int startingRow) {
         if (!validRow(startingRow)) {
             throw new IllegalArgumentException("Inputted row out of bounds");
         }
@@ -274,7 +289,8 @@ public class Matrix {
     public void echelonForm() {
         sortRows();
         for (int row = 0; row < ROWS - 1; row++) {
-            zeroPivotColsBelow(row);
+            zeroBelowPivotCols(row);
+            sortRows(row + 1); // to make sure matrix rows become unsorted after row operations
         }
         dataChanged = true;
     }
@@ -283,7 +299,7 @@ public class Matrix {
     public void reducedEchelonForm() {
         echelonForm();
         for (int row = ROWS - 1; row > 0; row--) {
-            zeroPivotColsAbove(row);
+            zeroAbovePivotCols(row);
             normalizeRow(row);
         }
         dataChanged = true;
