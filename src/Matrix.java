@@ -344,10 +344,13 @@ public class Matrix {
         StringBuilder builder = new StringBuilder();
         for (int row = 0; row < ROWS; row++) {
             builder.append("|  "); // left edge of matrix
-            for (int col = 0; col < COLS; col++) {
+            for (int col = 0; col < COLS - 1; col++) {
                 builder.append(displayValues[row][col]);
                 builder.append(spaces[row][col]);
             }
+            builder.append("|  ");
+            builder.append(displayValues[row][COLS - 1]);
+            builder.append(spaces[row][COLS - 1]);
             builder.append("|\n"); // right edge of matrix
         }
 
