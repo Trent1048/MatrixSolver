@@ -16,6 +16,8 @@ public class Matrix {
 
     public Matrix(int rows, int cols) {
 
+        if (rows < 0 || cols < 0) throw new IllegalArgumentException("The matrix cannot have a dimension of 0");
+
         this.ROWS = rows;
         this.COLS = cols;
 
@@ -348,7 +350,9 @@ public class Matrix {
                 builder.append(displayValues[row][col]);
                 builder.append(spaces[row][col]);
             }
-            builder.append("|  ");
+            if (COLS > 1) { // don't show the augmented matrix bar if there is only one column
+                builder.append("|  ");
+            }
             builder.append(displayValues[row][COLS - 1]);
             builder.append(spaces[row][COLS - 1]);
             builder.append("|\n"); // right edge of matrix
