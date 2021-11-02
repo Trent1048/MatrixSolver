@@ -12,18 +12,18 @@ public class Main {
         Scanner console = new Scanner(System.in);
         String command;
 
-        System.out.println("Welcome, this is a program that can put an augmented matrix into echelon or reduced echelon form\n");
+        System.out.println("Welcome, this is a program that can put an augmented matrix into echelon or reduced echelon form\n" +
+                "Or calculate the determinant of a coefficient matrix");
 
         mainLoop:
         while (true) {
 
-            System.out.println("""
-                    Please enter a command:
-                    \tInput an augmented matrix (I)
-                    \tConvert inputted matrix into echelon form (E)
-                    \tConvert inputted matrix into reduced echelon form (R)
-                    \tQuit the program (Q)
-                    """);
+            System.out.println("Please enter a command:" +
+                    "\n\tInput a matrix (I)" +
+                    "\n\tConvert inputted matrix into echelon form (E)" +
+                    "\n\tConvert inputted matrix into reduced echelon form (R)" +
+                    "\n\tCalculate the determinant of the matrix (D)" +
+                    "\n\tQuit the program (Q)");
 
             command = console.nextLine().toUpperCase();
 
@@ -127,17 +127,25 @@ public class Main {
                 case "E":
                     if (m != null) {
                         m.echelonForm();
-                        System.out.println(m);
+                        System.out.println(m.toString(true));
                     } else {
-                        System.out.println("Must input a system first\n");
+                        System.out.println("Must input a matrix first\n");
                     }
                     break;
                 case "R":
                     if (m != null) {
                         m.reducedEchelonForm();
-                        System.out.println(m);
+                        System.out.println(m.toString(true));
                     } else {
-                        System.out.println("Must input a system first\n");
+                        System.out.println("Must input a matrix first\n");
+                    }
+                    break;
+                case "D":
+                    if (m != null) {
+                        double determinant = m.determinant();
+                        System.out.println("The determinant is: " + determinant + "\n");
+                    } else {
+                        System.out.println("Must input a matrix first\n");
                     }
                     break;
                 case "Q":

@@ -308,6 +308,42 @@ public class Matrix {
         dataChanged = true;
     }
 
+    // calculates the determinant of the matrix by calling the recursive function
+    public double determinant() {
+
+        if (ROWS != COLS) {
+            throw new IllegalArgumentException("Matrix must be square to find the determinant");
+        }
+
+        // base case: m is a 2 x 2 matrix
+        // (don't need to check column because we already know it is square)
+        if (ROWS == 2) {
+            // | a b |
+            // | c d |
+            // a 2 x 2 matrix as shown has a determinant ad - bc
+            return get(0, 0) * get(1, 1) - get(0, 1) * get(1, 0);
+        }
+
+        // variables for upcoming loop:
+        int plusMinus = 1;
+        double sum = 0.0;
+        int row = 0;
+        Matrix excludedRowColMatrix;
+        double excludedRowColDeterminant;
+
+        // loop through each value in the first row
+        // multiply by that value times the determinant
+        // and + - + - them up together
+        for (int col = 0; col < COLS; col++) {
+            excludedRowColMatrix = getMatrixWithExcludedRowAndCol(row, col);
+            excludedRowColDeterminant = excludedRowColMatrix.determinant();
+            sum += get(row, col) * excludedRowColDeterminant * plusMinus;
+            plusMinus *= -1; // flip value of plusMinus for next iteration
+        }
+
+        return sum;
+    }
+
     // HELPER FUNCTIONS
 
     // checks whether an inputted row value is within the bounds of the matrix
@@ -324,9 +360,54 @@ public class Matrix {
 
     }
 
+    // for use with the determinant function
+    // returns a new matrix that contains values of this
+    // matrix without any from the specified row and column
+    private Matrix getMatrixWithExcludedRowAndCol(int excludedRow, int excludedCol) {
+        int newRows = ROWS - 1;
+        int newCols = COLS - 1;
+
+        if (newRows < 1 || newCols < 1) {
+            throw new IllegalArgumentException("Cannot make a new matrix with dimension of 0");
+        }
+
+        Matrix m = new Matrix(newRows, newCols);
+
+        // add either 0 or 1 to the row/column after excluded row/column has been hit
+        // to get values to line up correctly in the new matrix
+        int additionalRow = 0;
+        int additionalCol = 0;
+
+        for (int row = 0; row < ROWS; row++) {
+            // skip the excluded row and update the additionalRow variable
+            // to account for the excluded row when indexing the matrix
+            if (row == excludedRow) {
+                additionalRow = 1;
+                continue;
+            }
+            // reset every row because columns before the skipped one don't need to add 1 to the index
+            additionalCol = 0;
+            for (int col = 0; col < COLS; col++) {
+                // skip the excluded column and update the additionalCol variable
+                // to account for the excluded column when indexing the matrix
+                if (col == excludedCol) {
+                    additionalCol = 1;
+                    continue;
+                }
+                m.set(row - additionalRow, col - additionalCol, get(row, col));
+            }
+        }
+
+        return m;
+    }
+
     // TO_STRING RELATED FUNCTIONS
 
     public String toString() {
+        return toString(false);
+    }
+
+    public String toString(boolean augmented) {
 
         // only goes through the expensive String recalculation process when changes have occurred to the data
         if (!dataChanged) return asString;
@@ -351,7 +432,7 @@ public class Matrix {
                 builder.append(displayValues[row][col]);
                 builder.append(spaces[row][col]);
             }
-            if (COLS > 1) { // don't show the augmented matrix bar if there is only one column
+            if (COLS > 1 && augmented) { // don't show the augmented matrix bar if there is only one column
                 builder.append("|  ");
             }
             builder.append(displayValues[row][COLS - 1]);
@@ -361,6 +442,7 @@ public class Matrix {
 
         asString = builder.toString();
         return asString;
+
     }
 
     // returns a nice looking value for display purposes
